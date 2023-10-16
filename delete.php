@@ -7,4 +7,3 @@ $jobID=$_GET['id'];
 	mysqli_stmt_execute($stmt);  //執行SQL
 	echo "message added.";
 ?>
-<a href="list.php">回工作列表</a>
