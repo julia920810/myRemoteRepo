@@ -1,0 +1,408 @@
+
+
+<!DOCTYPE html>
+<!--M2KExpire--><!--var stInfo={job_id: "", pre_cmd: "/cgi-bin/login", uid: "", hint: "", szReason: "", crumb: "0", lang: "tw" };--><!--M2KExpire-->
+<html lang="zh-Hant">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="tpl_revision" content="$Revision: 31223:eba8f4f2036a $" />
+		<meta name="msg_revision" content="$Revision: 29786:76bfb4a45460 $" />
+		<title>Mail2000 Message System</title>
+		<!-- load NCNU background picture, hching, 20191001 -->
+		<link rel="icon" href="icon.ico" type="image/x-icon" />
+		<!--<link rel="stylesheet" href="/c70/login.css
+		
+		<script src="/j70/libm2k.js?m=2303162024" ></script>
+		<script src="/lib/jquery/jquery-latest-standard.js?m=2303162024"></script>
+		<script src="/j70/m2k_adm.js?m=2303162024"></script>
+		<script src="/j70/m2k_ui_dialog.js?m=2303162024"></script>
+		<script src="/cht/j70/msgtw.js?m=2303162024" ></script>
+		<script src="/j70/OnScreenKeyboard.js?m=2303162024" ></script>
+		<script src="/j70/session.js?m=2303162024"></script>">-->
+		<!-- <link href="mycss.css" rel="stylesheet" type="text/css" /> -->
+<style type="text/css">
+body {
+ background-image: url("img.jpg");
+ background-size: cover;
+ background-repeat: no-repeat;
+ display: flex;
+ justify-content: center;
+ align-items: center;
+}
+#frame {
+	
+}
+</style>
+		<script>
+		<!--
+var g_bOtpLogin= false ;
+var g_szErrMsg="";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function fl()
+{
+     var key=(true ? "_ga=GA1.1.1443795922.1636355625; _ga_LF22CNLM66=GS1.1.1656470742.3.0.1656470742.0; __utma=67500430.1443795922.1636355625.1652534094.1656470743.2; _ga_LZWP3HY7R4=GS1.1.1680421653.3.0.1680421653.0.0.0; _ga_1906M3445N=GS1.1.1697458342.9.0.1697458356.0.0.0" : document.cookie);
+     var form=document.login;
+	  if ( key.match(/m2kuid=([^;]+)[;]*/) ){ 
+		  form.USERID.value = RegExp.$1; 
+		  form.remember.checked = true;
+     }
+}
+
+var g_bKeyBoardEnabled = true;
+var stBoard = null;
+
+function keyboardSwitch()
+{
+	stBoard.open();
+}
+
+
+
+function SetOtpHint()
+{
+	var otpHint = document.getElementById('otpHint');
+	if (otpHint) {
+		otpHint.style.visibility = "visible";
+	}
+}
+
+function GetReloginUserID()
+{
+	var szUserID = "";
+
+	// for standard
+	try {
+		stMainWnd = GetMainWindow();
+		if (stMainWnd && 'undefined' != typeof(stMainWnd.M2K_RELOGIN_USERID)) {
+			szUserID = stMainWnd.M2K_RELOGIN_USERID;
+
+			if ("" != szUserID) {
+				return szUserID;
+			}
+		}
+	}
+	catch (e) {}
+
+	// for simple
+	try {
+		var stTop = PageOrTop('HeadFrm');
+
+		if (stTop && 'undefined' != typeof(stTop.M2K_RELOGIN_USERID)) {
+			szUserID = stTop.M2K_RELOGIN_USERID;
+
+			if ("" != szUserID) {
+				return szUserID;
+			}
+		}
+	}
+	catch (e) {}
+
+	return szUserID;
+}
+
+function Init()
+{
+   window.setupM2KSessionSetting({
+      crumb: 0,
+      httpOnlyEnabled: true,
+      sessionEncrypt: false
+   });
+   
+	
+	fl();
+	
+
+	var normal_div, ajax_div;
+	var pMainWnd = GetMainWindow(true);
+	var fnLoginDlg, fnLogin, stInfo;	
+	var szUserID;
+
+	normal_div = document.getElementById('normal_div');
+	ajax_div = document.getElementById('ajax_div');
+
+	if (pMainWnd && "function" == typeof(pMainWnd.fnExpireHandleCB)) {
+		pMainWnd.fnExpireHandleCB(null, null);
+		return true;
+	}
+
+	if (g_bOtpLogin){
+		fnLoginDlg = (pMainWnd && pMainWnd.ShowOtpLoginDlg)?pMainWnd.ShowOtpLoginDlg:null;
+		fnLogin = DoOtpLogin;
+		stInfo={job_id: "", pre_cmd: "/cgi-bin/login", uid: "", szReason: g_szErrMsg, crumb: "0", lang: "tw", otptkn: ""};
+		document.ajax_login.action = "/cgi-bin/login.otp";
+		document.login.action = "/cgi-bin/login.otp";
+		if (g_szErrMsg == "") {
+			setTimeout('SetOtpHint()', 20000);
+		} else {
+			var stdLogin = document.getElementById('stdLogin');
+			var otpErr = document.getElementById('otpErr');
+			if (stdLogin && otpErr) {
+				stdLogin.style.display = "none";
+				otpErr.style.display = "block";
+			}
+		}
+	} else {
+		fnLoginDlg = (pMainWnd && pMainWnd.ShowLoginDlg)?pMainWnd.ShowLoginDlg:null;
+		fnLogin = DoLogin;
+		stInfo={job_id: "", pre_cmd: "/cgi-bin/login", uid: "", hint: "", szReason: g_szErrMsg, crumb: "0", lang: "tw" };
+		document.ajax_login.action = "/cgi-bin/login";
+		document.login.action = "/cgi-bin/login";
+	}
+
+	var bInDialog = (function() {
+      for(var w = window; w !== top; w = w.parent) {
+         try {
+            if(w.m2k.ui.dialog.isInDialog()) {
+               return true;
+            }
+         } catch(e) {}
+      }
+      
+      try {
+         if(w.m2k.ui.dialog.isInDialog()) {
+            return true;
+         }
+      } catch(e) {}
+      
+      return false;
+	})();
+
+	if (fnLoginDlg && !bInDialog) {
+		if (normal_div)
+			normal_div.style.display = 'none';
+
+		$("body > div.footer").hide();
+
+		if (ajax_div)
+			ajax_div.style.display = '';
+
+		fnLoginDlg(stInfo, fnLogin);
+	} else {
+		if(m2k.tool.isInAdmIframe()){
+			m2k.adm.frameResize();
+		}
+
+		if (normal_div) {
+			normal_div.style.display = '';
+		}
+		
+		$("body > div.footer").show();
+		
+		if (ajax_div) {
+			ajax_div.style.display = 'none';
+		}
+
+		if (g_bKeyBoardEnabled) {
+			stBoard = new Board({
+				szBoardId: "board",
+				szFormID: "login"
+			});
+		} else {
+			document.getElementById("keyboardDisp").style.display = "none";
+		}
+
+
+
+		if (typeof(document.login.USERID) != 'undefined' && document.login.USERID) {
+			if (g_bKeyBoardEnabled) {
+				stBoard.setTarget(document.login.USERID);
+			}
+			document.login.USERID.focus();
+		}
+
+
+
+		m2k.ui.dialog.init({
+			title: "Mail2000 Message System"
+		});
+	}
+
+	return true;
+}
+
+function CheckSubmit()
+{
+
+
+
+	if(document.login.opennw.checked){
+		var stWnd=window.open("/blank.html", "M2KAW", "fullscreen=yes,resizable=yes,status=yes");
+		document.login.target="M2KAW";
+		stWnd.focus();
+	} else {
+		document.login.target="_self";
+	}
+
+   
+   window.startM2KSessionMonitor();
+   
+	return true;
+}
+
+function DoLogin(szUserID, szPasswd, szCaptCode, szCaptAns)
+{
+	var form;
+
+	form = document.ajax_login;
+
+	form.USERID.value = szUserID;
+	form.PASSWD.value = szPasswd;
+
+
+	if (CheckSubmit()) {
+	   window.startM2KSessionMonitor();
+	   
+		form.submit();
+	}
+}
+
+function DoOtpLogin(szOtpCode)
+{
+	var form;
+
+	form = document.ajax_login;
+
+	form.OTPCODE.value = szOtpCode;
+
+	if (CheckSubmit()) {
+	   window.startM2KSessionMonitor();
+	   
+		form.submit();
+	}
+}
+
+function OpenOtpManual()
+{
+	return HelpManualOpen('http://manual.openfind.com.tw/m2kv7/sp1/otp/tw/index.html', true, false);
+}
+
+$(Init);
+		//-->
+		</script>
+	</head>
+	<body>
+		<div class="topLine"></div>
+		<div id="ajax_div" style="height:100%;width:100%;display:none;background-color:white;">
+			<form name="ajax_login" action="/cgi-bin/login" method="post">
+
+
+				<input type="hidden" name="USERID">
+				<input type="hidden" name="PASSWD">
+
+
+			</form>
+		</div>
+
+	<div id="frame">
+      <table id="normal_div" class="container" border="0" cellpadding="0" cellspacing="0">
+         <form name="login" id="login" action=login.php?"/cgi-bin/login" method="post" onsubmit="return CheckSubmit();">
+
+            <input type=hidden value="7.5" name="keep_days">
+
+
+ 
+
+
+
+            <tr class="layoutTopSpace"><td></td></tr>
+            <tr class="layoutRow">
+               <td class="layoutCell">
+                  <table class="main" border="0" cellpadding="0" cellspacing="0">
+                     <tr>
+                        <td>
+                           <div class="logoWrap">
+                              <div class="logo"></div>
+                           </div>
+                           <div class="loginWrap">
+                                    <table id="stdLogin" class="loginContentWrap" border="0" cellpadding="0" cellspacing="0">
+                                       <tr>
+                                          <td class="loginContentCell">
+
+                                             <div class="loginContent">
+                                                <div>Account 帳號：</div>
+                                                   <div class="keyboardWrap">
+                                                      <div id="keyboardDisp" class="keyboardBlock">
+                                                         <a class="keyboardBtn" onClick="keyboardSwitch();return false;" href="#"></a>
+                                                         <div id="board"></div>
+                                                      </div>
+                                                   </div>
+																
+                                                <input class="loginInput" style="color:red" maxlength="318" name="USERID" value="" tabindex=1 onFocus="if (g_bKeyBoardEnabled && stBoard) {stBoard.setTarget(this);}">@ncnu.edu.tw
+																
+                                             </div>
+                                             <div class="loginContent">
+                                                <div>Password 密碼：</div>
+                                                <input class="loginInput" style="color:red" type=password maxlength=32 name="PASSWD" tabindex=2 onFocus="if (g_bKeyBoardEnabled && stBoard) {stBoard.setTarget(this);}">
+                                             </div>
+					     <div class="loginContent">
+						<div>Language 語言 :</div>
+						      <select id="lang" name="lang" style="color:red">
+						      <option value="">個人設定 (Personal Config)</option>
+						      <option value="tw">Trad. Chinese 正體中文</option>
+						      <option value="en">English 英文</option>
+						      </select>
+					     </div>
+
+                                             <div class="loginContent loginOption">
+                                                <input class="checkbox" type="checkbox" value="1" tabindex="4" name="remember"><label>Remember Account 記住帳號</label>
+                                                <input class="checkbox mLeft" type="checkbox" value="1" tabindex="5" name="opennw"><label>New Window 開新視窗</label>
+                                             </div>
+                                             
+                                             <div class="loginContent loginOption">
+                                             	
+                                             	
+                                             </div>
+                                             
+
+
+
+
+
+                                             <div class="loginContent btnWrap">
+
+					    	<a class="btn_submit_new" href="javascript:void(0)"><input value="Login 登入" type="submit" style="height:25px;width:250px;background:#324b9b; color:white; font-weight:bold"/></a>
+                                             	<br>
+
+                                             </div>
+					     <!-- add hyper link to other web pages begin, hching, 20191001 -->
+					     <div class="loginContent mCenter">
+					    <b><font>更多資訊請參考<a href="https://cc.ncnu.edu.tw/p/404-1001-6149.php?Lang=zh-tw"> 說明網頁 </a></font></b> 
+						</div>
+					     </div>
+					     <!-- add hyper link to other web pages end, hching, 20191001 -->
+                                          </td>
+                                       </tr>
+                                    </table>
+
+                                 <div class="copyrightWrap"><div class="copyright"><div class="footer">Copyright &copy; Openfind Information Technology INC. All rights reserved.</div></div></div>
+                           </div>
+                        </td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </form>
+      </table>
+	  </div>
+	</body>
+</html>
