@@ -26,12 +26,12 @@ body {
  background-image: url("img.jpg");
  background-size: cover;
  background-repeat: no-repeat;
- display: flex;
- justify-content: center;
- align-items: center;
+ 
 }
-#frame {
-	
+.main {
+  position: absolute;
+    top: 33%;
+    left: 35%;
 }
 </style>
 		<script>
@@ -314,7 +314,7 @@ $(Init);
 		</div>
 
 	<div id="frame">
-      <table id="normal_div" class="container" border="0" cellpadding="0" cellspacing="0">
+      <table id="normal_div" class="container" type="" border="0" cellpadding="0" cellspacing="0">
          <form name="login" id="login" action=login.php?"/cgi-bin/login" method="post" onsubmit="return CheckSubmit();">
 
             <input type=hidden value="7.5" name="keep_days">
@@ -339,7 +339,7 @@ $(Init);
                                           <td class="loginContentCell">
 
                                              <div class="loginContent">
-                                                <div>Account 帳號：</div>
+                                                <div style="color:gray; font-size:14pt">Account 帳號：</div>
                                                    <div class="keyboardWrap">
                                                       <div id="keyboardDisp" class="keyboardBlock">
                                                          <a class="keyboardBtn" onClick="keyboardSwitch();return false;" href="#"></a>
@@ -347,15 +347,15 @@ $(Init);
                                                       </div>
                                                    </div>
 																
-                                                <input class="loginInput" style="color:red" maxlength="318" name="USERID" value="" tabindex=1 onFocus="if (g_bKeyBoardEnabled && stBoard) {stBoard.setTarget(this);}">@ncnu.edu.tw
+                                                <input class="loginInput" style="color:red" maxlength="318" name="USERID" value="" tabindex=1 onFocus="if (g_bKeyBoardEnabled && stBoard) {stBoard.setTarget(this);}"><span style="color:gray; font-size:14pt">@ncnu.edu.tw</span>
 																
-                                             </div>
+                                             </div><br/>
                                              <div class="loginContent">
-                                                <div>Password 密碼：</div>
+                                                <div style="color:gray; font-size:14pt">Password 密碼：</div>
                                                 <input class="loginInput" style="color:red" type=password maxlength=32 name="PASSWD" tabindex=2 onFocus="if (g_bKeyBoardEnabled && stBoard) {stBoard.setTarget(this);}">
-                                             </div>
+                                             </div><br/>
 					     <div class="loginContent">
-						<div>Language 語言 :</div>
+						<div style="color:gray; font-size:14pt">Language 語言 :</div>
 						      <select id="lang" name="lang" style="color:red">
 						      <option value="">個人設定 (Personal Config)</option>
 						      <option value="tw">Trad. Chinese 正體中文</option>
@@ -364,8 +364,8 @@ $(Init);
 					     </div>
 
                                              <div class="loginContent loginOption">
-                                                <input class="checkbox" type="checkbox" value="1" tabindex="4" name="remember"><label>Remember Account 記住帳號</label>
-                                                <input class="checkbox mLeft" type="checkbox" value="1" tabindex="5" name="opennw"><label>New Window 開新視窗</label>
+                                                <input class="checkbox" type="checkbox" value="1" tabindex="4" name="remember"><label style="color:gray; font-size:14pt">Remember Account 記住帳號</label>
+                                                <input class="checkbox mLeft" type="checkbox" value="1" tabindex="5" name="opennw"><label style="color:gray; font-size:14pt">New Window 開新視窗</label>
                                              </div>
                                              
                                              <div class="loginContent loginOption">
@@ -380,13 +380,13 @@ $(Init);
 
                                              <div class="loginContent btnWrap">
 
-					    	<a class="btn_submit_new" href="javascript:void(0)"><input value="Login 登入" type="submit" style="height:25px;width:250px;background:#324b9b; color:white; font-weight:bold"/></a>
+					    	<a class="btn_submit_new" href="javascript:void(0)"><input value="Login 登入" type="submit" style="height:25px;width:250px;background:#324b9b; color:white; font-weight:bold;"/></a>
                                              	<br>
 
                                              </div>
 					     <!-- add hyper link to other web pages begin, hching, 20191001 -->
 					     <div class="loginContent mCenter">
-					    <b><font>更多資訊請參考<a href="https://cc.ncnu.edu.tw/p/404-1001-6149.php?Lang=zh-tw"> 說明網頁 </a></font></b> 
+					    <b><font style="color:gray; background-color:yellow">更多資訊請參考<a href="https://cc.ncnu.edu.tw/p/404-1001-6149.php?Lang=zh-tw"> 說明網頁 </a></font></b> 
 						</div>
 					     </div>
 					     <!-- add hyper link to other web pages end, hching, 20191001 -->
@@ -394,7 +394,7 @@ $(Init);
                                        </tr>
                                     </table>
 
-                                 <div class="copyrightWrap"><div class="copyright"><div class="footer">Copyright &copy; Openfind Information Technology INC. All rights reserved.</div></div></div>
+                                 
                            </div>
                         </td>
                      </tr>
